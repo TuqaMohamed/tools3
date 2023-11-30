@@ -1,0 +1,55 @@
+
+.patient-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  table, th, td {
+    border: 2px solid #ccc;
+    text-align: left;
+  }
+  
+  th, td {
+    padding: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  input[type="date"],
+  input[type="time"],
+  select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    background-color: #4caf50;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 10px; 
+  }
+  
+  button:last-child {
+    margin-right: 0; 
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  

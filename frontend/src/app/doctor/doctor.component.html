@@ -1,0 +1,43 @@
+<div class="doctor-container">
+    <h2>Hello, Doctor</h2>
+    <h3>My Slots</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let appointment of appointments">
+          <td>{{ appointment.date | date:'dd/MM/yy' }}</td>
+          <td>{{ appointment.time }}</td>
+          <td>
+            <button (click)="editAppointment(appointment)">Edit</button>
+            <button (click)="cancelAppointment(appointment)">Cancel</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Doctor Messages</h3>
+    <div class="messages-container">
+        <button (click)="toggleMessagesDropdown()">Show Messages</button>
+        <div *ngIf="showMessagesDropdown" class="messages-dropdown">
+            <ul>
+                <li *ngFor="let message of doctorMessages">{{ message }}</li>
+            </ul>
+        </div>
+    </div>
+    <h3>Create New Slot</h3>
+    <div class="form-group">
+      <label for="slotDate">Date:</label>
+      <input type="date" id="slotDate" [(ngModel)]="newAppointment.date" name="slotDate" required>
+    </div>
+    <div class="form-group">
+      <label for="slotTime">Time:</label>
+      <input type="time" id="slotTime" [(ngModel)]="newAppointment.time" name="slotTime" required>
+    </div>
+    <button (click)="addAppointmentAndSetSchedule()">Add Slot</button>
+  </div>
+  
+  

@@ -1,0 +1,33 @@
+<div class="signin-container">
+  <h2>Sign Up</h2>
+  <form (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Name:</label>
+      <input type="text" id="name" [(ngModel)]="name" name="name" required
+             aria-label="Enter your name">
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input type="email" id="email" [(ngModel)]="email" name="email" required
+             aria-label="Enter your email">
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" [(ngModel)]="password" name="password" required>
+    </div>
+    <div class="form-group">
+      <label>User Type:</label>
+      <div>
+        <label>
+          <input type="radio" [(ngModel)]="userType" name="userType" value="patient" > Patient
+        </label>
+      </div>
+      <div>
+        <label>
+          <input type="radio" [(ngModel)]="userType" name="userType" value="doctor"> Doctor
+        </label>
+      </div>
+    </div>
+    <button type="submit">Sign Up</button>
+  </form>
+</div>

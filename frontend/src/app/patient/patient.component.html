@@ -1,0 +1,63 @@
+<div class="patient-container">
+  <h2>Hello, Patient</h2>
+
+  <h3>My Appointments</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Doctor's Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let appointment of appointments">
+        <td>{{ appointment.date }}</td>
+        <td>{{ appointment.time }}</td>
+        <td>{{ appointment.doctorName }}</td>
+        <td>
+          <button (click)="editAppointment(appointment)">Edit</button>
+          <button (click)="cancelAppointment(appointment)">Cancel</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="editedAppointment">
+    <h3>Edit Appointment</h3>
+    <form>
+      <div class="form-group">
+        <label for="editDoctor">Select Doctor:</label>
+        <select id="editDoctor" [(ngModel)]="editedDoctor" name="editDoctor" required (change)="loadDoctorSlots(true)">
+          <option *ngFor="let doctor of doctors" [ngValue]="doctor">{{ doctor.name }}</option>
+        </select>
+      </div>
+      <div class="form-group" *ngIf="editedDoctor">
+        <label for="editSlot">Select Slot:</label>
+        <select id="editSlot" [(ngModel)]="editedSlot" name="editSlot" required>
+          <option *ngFor="let slot of editedAvailableSlots" [ngValue]="slot">{{ slot.date }} - {{ slot.time }}</option>
+        </select>
+        
+      </div>
+      <button type="button" (click)="saveEditedAppointment()">Save</button>
+    </form>
+  </div>
+  
+  <div class="form-group">
+    <label for="reserveDoctor">Select Doctor:</label>
+    <select id="reserveDoctor" [(ngModel)]="selectedDoctor" name="reserveDoctor" required (change)="loadDoctorSlots(false)">
+      <option *ngFor="let doctor of doctors" [ngValue]="doctor">{{ doctor.name }}</option>
+    </select>
+  </div>
+  
+  <div class="form-group" *ngIf="selectedDoctor">
+    <label for="reserveSlot">Select Slot:</label>
+    <select id="reserveSlot" [(ngModel)]="selectedSlot" name="reserveSlot" required>
+      <option *ngFor="let slot of availableSlots" [ngValue]="slot">{{ slot.date }} - {{ slot.time }}</option>
+    </select>
+    
+  </div>
+  <button (click)="reserveAppointment()">Reserve</button>
+  
