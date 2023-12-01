@@ -11,8 +11,8 @@ import (
 var Client *mongo.Client
 var Context context.Context
 
-func ConnectDB() {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017/")
+func ConnectDB(containerName string) {
+	clientOptions := options.Client().ApplyURI("mongodb://mongo-container:27017/")
 	client, err := mongo.Connect(Context, clientOptions)
 	if err != nil {
 		fmt.Println(err)

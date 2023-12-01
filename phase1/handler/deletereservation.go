@@ -1,13 +1,19 @@
-package handlers
+package handler
 
 import (
-	"phase1/config"
+	"encoding/json"
 	"net/http"
+	"phase1/config"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+// ResponseMessage is a struct to represent the response message
+type ResponseMessage struct {
+	Message string `json:"message"`
+}
 
 // DeleteSlot deletes a slot based on its ID
 func DeleteSlot(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +34,7 @@ func DeleteSlot(w http.ResponseWriter, r *http.Request) {
 	result, err := slotsCollection.UpdateOne(
 		r.Context(),
 		bson.M{"_id": objID},
-		bson.M{"$set": bson.M{"isBooked": false, "patientEmail": ""}},
+		bson.M{"$set": bson.M{"isBooked": false, "patientName": "", "patientID": primitive.NilObjectID}},
 	)
 	if err != nil {
 		http.Error(w, "Failed to update reservation", http.StatusInternalServerError)
@@ -41,7 +47,12 @@ func DeleteSlot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Respond with a success message
+	// Respond with a success message as JSON
+	responseMessage := ResponseMessage{
+		Message: "Reservation deleted successfully",
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Reservation deleted successfully"))
+	json.NewEncoder(w).Encode(responseMessage)
 }

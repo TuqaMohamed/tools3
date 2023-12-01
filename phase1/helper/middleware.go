@@ -8,7 +8,7 @@ import (
 
 var store = sessions.NewCookieStore([]byte("menna@2023"))
 
-func StoreUserInSession(w http.ResponseWriter, r *http.Request, email string) {
+func StoreUserInSession(w http.ResponseWriter, r *http.Request ,email string) {
 	session, err := store.Get(r, "Clinic-session")
 	if err != nil {
 		http.Error(w, "Error retrieving session", http.StatusInternalServerError)

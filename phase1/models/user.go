@@ -9,5 +9,5 @@ type User struct {
 	Email    string             `json:"email" bson:"email"`
 	Password string             `json:"password" bson:"password"`
 	Name     string             `json:"name" bson:"name"`
-	UserType string             `json:"user_type" bson:"user_type"`
+	UserType string             `json:"userType" bson:"userType"`
 }

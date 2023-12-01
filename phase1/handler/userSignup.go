@@ -1,4 +1,4 @@
-package handlers
+package handler
 
 import (
 	"context"
@@ -11,7 +11,20 @@ import (
 	"phase1/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+type Response struct {
+	Message string             `json:"message"`
+	User    models.User        `json:"user,omitempty"`
+	ID      primitive.ObjectID `json:"id,omitempty"`
+}
+
+func respondWithError(w http.ResponseWriter, message string, statusCode int) {
+	w.WriteHeader(statusCode)
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, `{"error": "%s"}`, message)
+}
 
 func SignUpController(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
@@ -19,12 +32,14 @@ func SignUpController(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&user)
 	helper.PanicIfError(err)
 
-	if err := validateSignupRequest(user); err != nil { //check if required fields exist
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := validateSignupRequest(user); err != nil {
+		respondWithError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if userExists(user.Email, user.UserType) { //check if user is already registered
-		http.Error(w, "User already registered", http.StatusConflict)
+
+	if userExists(user.Email, user.UserType) {
+		fmt.Println("hello")
+		respondWithError(w, "User already registered", http.StatusConflict)
 		return
 	}
 
@@ -36,19 +51,33 @@ func SignUpController(w http.ResponseWriter, r *http.Request) {
 	}
 
 	collection := config.Client.Database("clinic").Collection(collectionName)
-	_, err = collection.InsertOne(context.Background(), bson.M{
+	result, err := collection.InsertOne(context.Background(), bson.M{
 		"name":     user.Name,
 		"email":    user.Email,
 		"password": user.Password,
+		"userType": user.UserType,
 	})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		respondWithError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	json.NewEncoder(w).Encode(user)
+	insertedID, ok := result.InsertedID.(primitive.ObjectID)
+	if !ok {
+		respondWithError(w, "Failed to retrieve inserted ID", http.StatusInternalServerError)
+		return
+	}
 
-	fmt.Fprintf(w, "User Signed up successfully")
+	// Set the generated ID in the user object
+	user.ID = insertedID
 
+	response := Response{
+		Message: "User Signed up successfully",
+		User:    user,
+		ID:      user.ID,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
 }
 func userExists(email string, Usertype string) bool {
 

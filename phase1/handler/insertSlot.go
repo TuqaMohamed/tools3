@@ -1,16 +1,17 @@
-package handlers
+package handler
 
 import (
-	"phase1/config"
-	"phase1/helper"
-	"phase1/models"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"phase1/config"
+	"phase1/helper"
+	"phase1/models"
 
+	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,7 +20,8 @@ import (
 func SetScheduleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	email := helper.GetUserFromSession(r)
-	//log.Println(email)
+	fmt.Println(email)
+	doctorID := mux.Vars(r)["id"]
 	var input struct {
 		Slot models.Slot `json:"slot"`
 	}
@@ -30,53 +32,63 @@ func SetScheduleHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Find the doctor in the collection
-
-	userExists, doctor, err := validatedoctor("doctor", email)
+	fmt.Println("Reached before user validation")
+	objectID, err := primitive.ObjectIDFromHex(doctorID)
+	doctor, err := validatedoctor(objectID)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error validating doctor:", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
 	}
-
-	if !userExists {
-		fmt.Println("doctor doesn't exist")
-	}
+	fmt.Println("User validation completed")
+	// if !userExists {
+	// 	fmt.Println("doctor doesn't exist")
+	// 	http.Error(w, "doctor not found", http.StatusNotFound)
+	// 	return
+	// }
 
 	// Set the doctor's schedule by inserting the time slot into MongoDB
 	slot := models.Slot{
-		Date:         input.Slot.Date,
-		Time:         input.Slot.Time,
-		IsBooked:     false,
-		PatientEmail: "",
+		Date:     input.Slot.Date,
+		Time:     input.Slot.Time,
+		IsBooked: false,
 	}
 
 	// Insert the slot into the doctor_schedule collection
 	err = insertSlot(doctor.Name, doctor.ID, input.Slot)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("Error inserting slot:", err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(slot)
-	fmt.Fprintf(w, "slot inserted successfully")
+	response := map[string]interface{}{
+		"success":           true,
+		"message":           "slot inserted successfully",
+		"insertedSlot":      slot,
+		"doctorInformation": doctor,
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
 
-func validatedoctor(collectionName, email string) (bool, *models.User, error) {
-	collection := config.Client.Database("clinic").Collection(collectionName)
-	filter := bson.D{{Key: "email", Value: email}}
+func validatedoctor(id primitive.ObjectID) (*models.User, error) {
+	collection := config.Client.Database("clinic").Collection("doctor")
+	filter := bson.D{{Key: "_id", Value: id}}
 
 	var existingUser models.User
 	err := collection.FindOne(context.Background(), filter).Decode(&existingUser)
 
 	if err == mongo.ErrNoDocuments {
 		// User not found
-		return false, nil, nil
+		return nil, nil
 	} else if err != nil {
 		// Other errors
-		return false, nil, err
+		return nil, err
 	}
 
 	// User found
-	return true, &existingUser, nil
+	return &existingUser, nil
 }
 
 func insertSlot(name string, id primitive.ObjectID, slot models.Slot) error {

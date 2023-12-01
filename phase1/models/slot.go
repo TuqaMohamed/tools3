@@ -9,6 +9,7 @@ type Slot struct {
 	Date         string             `json:"date" bson:"date"`
 	DoctorName   string             `json:"doctorName" bson:"doctorName"`
 	IsBooked     bool               `json:"isBooked" bson:"isBooked"`
-	PatientEmail string             `json:"patientEmail,omitempty" bson:"patientEmail,omitempty"`
+	PatientName  string             `json:"patientName,omitempty" bson:"patientName,omitempty"`
 	Time         string             `json:"time" bson:"time"`
+	PatientID    primitive.ObjectID `json:"patientID,omitempty" bson:"patientID,omitempty"`
 }
