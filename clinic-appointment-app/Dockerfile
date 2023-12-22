@@ -1,29 +1,26 @@
-
+# Use an official Node runtime as a parent image
 FROM node:20
 
+# Set the working directory in the container
 WORKDIR /ToolsProject/clinic-appointment-app
 
+# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
+# Install Angular CLI globally
 RUN npm install -g @angular/cli
 
+# Install the application dependencies
 RUN npm install
 
+# Copy the application files to the working directory
 COPY . .
 
-COPY replace-config-url.sh .
-
-RUN chmod +x replace-config-url.sh
-
+# Build the Angular application
 RUN ng build --configuration=production
 
+# Expose the port that the application will run on
+EXPOSE 4200
 
-
-ARG API_URL=http://localhost:8080
-ENV API_URL=${API_URL}
-ENV FPORT=4200
-
-EXPOSE $FPORT
-
-
-CMD ./replace-config-url.sh && ng serve --host 0.0.0.0 --configuration=production 
+# Define the command to run the application
+CMD ["ng", "serve", "--host", "0.0.0.0"]

@@ -9,7 +9,6 @@ import { DoctorComponent } from './doctor/doctor.component';
 import { PatientComponent } from './patient/patient.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DoctorService } from './doctor/doctor.service';
-import { ConfigService } from './config.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,7 +23,7 @@ import { ConfigService } from './config.service';
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [ConfigService],
+  providers: [DoctorService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
