@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"phase1/config"
 	"phase1/handler"
 
@@ -20,8 +21,10 @@ import (
 func main() {
 
 	fmt.Println("Starting the application...")
-
-	config.ConnectDB("mongo-container")
+	port := ":"+os.Getenv("PORT")
+	dbURL:= os.Getenv("dbURL")
+	//corsOrigin := os.Getenv("CORS")
+	config.ConnectDB(dbURL)
 	defer config.Client.Disconnect(config.Context)
 	o := mux.NewRouter()
 
@@ -38,6 +41,6 @@ func main() {
 
 	headers := handlers.AllowedHeaders([]string{"Content-Type", "Authorization"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
-	origins := handlers.AllowedOrigins([]string{"http://localhost:4200"})
-	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(headers, methods, origins)(o)))
+	origins := handlers.AllowedOrigins([]string{"*"})
+	log.Fatal(http.ListenAndServe(port, handlers.CORS(headers, methods, origins)(o)))
 }
