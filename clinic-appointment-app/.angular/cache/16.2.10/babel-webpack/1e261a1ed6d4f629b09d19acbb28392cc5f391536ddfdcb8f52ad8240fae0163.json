@@ -1,0 +1,1 @@
+{"ast":null,"code":"\"use strict\";","map":{"version":3,"names":[],"sources":["D:\\Year4\\Tools 3\\clinic-appointment-app\\src\\app\\signin\\signin.models.ts"],"sourcesContent":["interface ApiResponse {\r\n    status: number;\r\n    message: string;\r\n    data: any;\r\n  }\r\n  "],"mappings":""},"metadata":{},"sourceType":"script","externalDependencies":[]}
