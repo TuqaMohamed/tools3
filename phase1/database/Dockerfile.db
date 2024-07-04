@@ -1,5 +1,5 @@
 # Use the official MongoDB image as the base image
-FROM mongo:latest
+FROM mongo:7.0.12
 
 # Set environment variables (optional)
 WORKDIR /phase1
