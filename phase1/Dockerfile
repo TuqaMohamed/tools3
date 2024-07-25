@@ -1,5 +1,5 @@
 # Use an official Go runtime as a base image
-FROM golang:latest
+FROM golang:1.23rc2
 
 # Set the working directory
 WORKDIR /phase1
